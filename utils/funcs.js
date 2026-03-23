@@ -1,6 +1,4 @@
 import Router from "next/router";
-import toast from "react-hot-toast";
-import { RiBookmark2Fill, RiBookmarkFill } from "react-icons/ri";
 
 import surahs from "@utils/surahs";
 
@@ -214,68 +212,6 @@ export const randomNumber = (min, max) => {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min;
-};
-
-export const handleBookmark = ({
-  action,
-  surahId,
-  verseNumber,
-  verseId,
-  setIsBookmarked,
-  notifications,
-}) => {
-  const values = {
-    type: "verse",
-    bookmarkItem: {
-      surah_id: surahId,
-      verse_number: verseNumber,
-      path: `/${surahId}/${verseNumber}`,
-    },
-    action,
-    verseId: verseId,
-    bookmarkKey: `s${surahId}v${verseNumber}`,
-  };
-
-  const locale = process.env.NEXT_PUBLIC_LOCALE;
-
-  toast.promise(
-    fetch(`/api/bookmark`, {
-      method: "POST",
-      body: JSON.stringify(values),
-    }).then((res) => {
-      if (res.ok) {
-        setIsBookmarked?.(action === "add");
-        return Promise.resolve();
-      } else {
-        return Promise.reject();
-      }
-    }),
-    {
-      loading:
-        action === "add"
-          ? notifications.add_loading
-          : notifications.remove_loading,
-      success: () => {
-        return action === "add"
-          ? notifications.add_success
-          : notifications.remove_success;
-      },
-      error: notifications.add_error,
-    },
-    {
-      success: {
-        icon:
-          action === "add" ? (
-            <RiBookmarkFill color="#FBA725" />
-          ) : (
-            <RiBookmark2Fill />
-          ),
-      },
-      error: {
-        icon: <RiBookmarkFill color="#c20000" />,
-      },
-    }
-  );
 };
 
 export const escapeHtml = (text) => {

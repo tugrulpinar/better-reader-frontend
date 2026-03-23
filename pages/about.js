@@ -128,7 +128,7 @@ const About = (props) => {
                 <AboutLogo>
                   <img
                     src={`/locales/${locale}/images/manifest/favicon-${theme}.png`}
-                    alt="Açık Kuran"
+                    alt="Better Reader"
                     width={72}
                     height={72}
                   />
@@ -178,7 +178,7 @@ const About = (props) => {
                           }
                           logEvent("app-store-button", `app-store-play`);
                         }}
-                        aria-label="App Store'da Açık Kuran'ı indir"
+                        aria-label="App Store'da Better Reader'ı indir"
                         href="https://apps.apple.com/us/app/acik-kuran/id1561649944"
                         target="_blank"
                       >
@@ -192,7 +192,7 @@ const About = (props) => {
                           }
                           logEvent("google-play-button", `goto-google-play`);
                         }}
-                        aria-label="Google Play'de Açık Kuran'ı indir"
+                        aria-label="Google Play'de Better Reader'ı indir"
                         href={t("apps__android")}
                         target="_blank"
                       >
@@ -289,10 +289,10 @@ const About = (props) => {
                   </AboutTechsList>
                 </AboutTechs>
                 <p style={{ textAlign: "center" }}>
-                  <a href="https://status.acikkuran.com" target="_blank">
+                  <a href="#" target="_blank">
                     <img
-                      src="https://status.acikkuran.com/api/badge/3/status"
-                      alt="Açık Kuran Status"
+                      src=""
+                      alt="Better Reader Status"
                     />
                   </a>
                 </p>

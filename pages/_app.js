@@ -2,7 +2,6 @@ import "react-tippy/dist/tippy.css";
 import "react-h5-audio-player/lib/styles.css";
 
 import localesConfig from "locales.config";
-import { SessionProvider } from "next-auth/react";
 import cookies from "next-cookies";
 import { appWithTranslation, useTranslation } from "next-i18next";
 import nextI18nextConfig from "next-i18next.config";
@@ -33,7 +32,7 @@ Router.events.on("routeChangeStart", () => {
 Router.events.on("routeChangeComplete", () => NProgress.done());
 Router.events.on("routeChangeError", () => NProgress.done());
 
-const Acikkuran = (props) => {
+const BetterReader = (props) => {
   const {
     Component,
     pageProps,
@@ -49,7 +48,7 @@ const Acikkuran = (props) => {
   if (theme === "light") themeMode = lightTheme;
   const { t } = useTranslation("common");
 
-  const domain = currentDomain || "acikkuran.com";
+  const domain = currentDomain || "localhost";
   const SEOConfig = {
     openGraph: {
       site_name: t("seo__home_title"),
@@ -72,7 +71,7 @@ const Acikkuran = (props) => {
   const manifest = localesConfig.find((i) => i.locale === locale).manifest;
 
   return (
-    <SessionProvider session={pageProps.session}>
+    <>
       <DefaultSeo {...SEOConfig} />
       <Head>
         <link
@@ -135,11 +134,11 @@ const Acikkuran = (props) => {
           <Modals authorId={authorId} />
         </ThemeProvider>
       </RecoilRoot>
-    </SessionProvider>
+    </>
   );
 };
 
-Acikkuran.getInitialProps = async (appContext) => {
+BetterReader.getInitialProps = async (appContext) => {
   const appProps = await App.getInitialProps(appContext);
 
   const { req } = appContext.ctx;
@@ -157,4 +156,4 @@ Acikkuran.getInitialProps = async (appContext) => {
   return { ...appProps, currentTheme: theme, authorId, currentDomain, locale };
 };
 
-export default appWithTranslation(Acikkuran, nextI18nextConfig);
+export default appWithTranslation(BetterReader, nextI18nextConfig);

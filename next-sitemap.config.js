@@ -1,7 +1,7 @@
 const surahs_tr = require("./data/surahsEn");
 
 module.exports = {
-  siteUrl: "https://quran.so",
+  siteUrl: "http://localhost:2018",
   generateRobotsTxt: true, // (optional)
   exclude: ["/about", "/search"], // (optional)
   sitemapBaseFileName: "sitemap-en",

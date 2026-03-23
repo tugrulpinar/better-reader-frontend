@@ -1,5 +1,4 @@
 import { setCookie } from "cookies-next";
-import { useSession } from "next-auth/react";
 import { useTranslation } from "next-i18next";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
@@ -107,7 +106,6 @@ const AuthorSelectionModal = (props) => {
   const { t } = useTranslation("common");
   const locale = process.env.NEXT_PUBLIC_LOCALE;
   const [modalInfo, setModalInfo] = useRecoilState(modalState);
-  const { data: session } = useSession();
 
   const { currentAuthorsList, setCurrentAuthorsList, authorSelections } =
     modalInfo?.modalProps;
@@ -143,25 +141,6 @@ const AuthorSelectionModal = (props) => {
 
   useEffect(() => {
     if (currentAuthorsList != items) {
-      const newAuthorSelections = {
-        tr:
-          authorSelections?.toString() === defaultAuthorSelections.tr.toString()
-            ? null
-            : authorSelections,
-        en:
-          authorSelections?.toString() === defaultAuthorSelections.en.toString()
-            ? null
-            : authorSelections,
-        [locale]: items,
-      };
-
-      if (session) {
-        fetch(`/api/author-selections`, {
-          method: "POST",
-          body: JSON.stringify(newAuthorSelections),
-        });
-      }
-
       setCurrentAuthorsList(items);
       setCookie(`a_s`, items, {
         maxAge: 60 * 60 * 24 * 12265,
@@ -185,28 +164,7 @@ const AuthorSelectionModal = (props) => {
       contentStyle={{ padding: 0 }}
     >
       <AuthorSelectionBaseContainer>
-        {!session && (
-          <AuthorSelectionLoginRequired>
-            <h2>
-              <RiDragDropLine size="42" />
-            </h2>
-            <p
-              dangerouslySetInnerHTML={{
-                __html: t("author_selection__login_required"),
-              }}
-            ></p>
-            <p>
-              <Button
-                type="button"
-                fullWidth
-                onClick={() => setModalInfo({ openedModal: "login" })}
-              >
-                {t("login__direction_text")}
-              </Button>
-            </p>
-          </AuthorSelectionLoginRequired>
-        )}
-        <AuthorSelectionContainer disabled={!session}>
+        <AuthorSelectionContainer>
           <AuthorSelectionList>
             <DndContext
               sensors={sensors}

@@ -100,7 +100,7 @@ const About = (props) => {
                 <AboutLogo>
                   <img
                     src={`/locales/${locale}/images/manifest/favicon-${theme}.png`}
-                    alt="Açık Kuran"
+                    alt="Better Reader"
                     width={72}
                     height={72}
                   />

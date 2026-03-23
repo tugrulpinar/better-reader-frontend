@@ -1,7 +1,5 @@
-import sessionCookieControl from "lib/sessionCookieControl";
+import cookies from "next-cookies";
 import localesConfig from "locales.config";
-import { getServerSession } from "next-auth";
-import { useSession } from "next-auth/react";
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { BreadcrumbJsonLd, NextSeo } from "next-seo";
@@ -14,8 +12,6 @@ import React, { useContext, useEffect, useMemo, useState } from "react";
 import {
   RiArrowLeftLine,
   RiBook3Line,
-  RiBookmarkFill,
-  RiBookmarkLine,
   RiDragDropLine,
   RiExternalLinkLine,
   RiHome6Line,
@@ -29,7 +25,6 @@ import { useSwipeable } from "react-swipeable";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { useTextSelection } from "use-text-selection";
 
-import { authOptions } from "@auth/[...nextauth]";
 import AmpAnalytics from "@components/amp/AmpAnalytics";
 import Button from "@components/common/Button";
 import Organization from "@components/common/Organization";
@@ -40,7 +35,6 @@ import Navbar from "@components/layout/Navbar";
 import Share from "@components/ui/Share";
 import VerseExpand from "@components/ui/VerseExpand";
 import defaultAuthorSelections from "@data/defaultAuthorSelections";
-import useStreakTimer from "@hooks/useStreakTimer";
 import { envInfoState, modalState, targetVerseState } from "@recoil/atoms";
 import { Content } from "@styles/global.style";
 import { NavSearch } from "@styles/navbar.style";
@@ -77,7 +71,6 @@ import {
   goToPrevVerse,
   goToSurah,
   goToVerse,
-  handleBookmark,
   verseOptions,
 } from "@utils/funcs";
 import languageAlternates from "@utils/languageAlternates";
@@ -126,13 +119,8 @@ const Verse = (props) => {
 
   const { textContent: selectedTextContent } = useTextSelection();
 
-  useStreakTimer();
-
-  const { data: session } = useSession();
-
   const envInfo = useRecoilValue(envInfoState);
 
-  const [isBookmarked, setIsBookmarked] = useState(false);
   const { audioSurah, storeAudioSurah } = useContext(PlayerContext);
 
   const handlers = useSwipeable({
@@ -176,13 +164,6 @@ const Verse = (props) => {
     logEvent("env-info", envInfo || "web");
   }, [verse]);
 
-  useEffect(() => {
-    setIsBookmarked(false);
-    () => {
-      setIsBookmarked(false);
-    };
-  }, [verse]);
-
   const [_, setModalInfo] = useRecoilState(modalState);
   const [targetVerse, setTargetVerseValue] = useRecoilState(targetVerseState);
   const [selectedVerseTab, setSelectedVerseTab] = useState(0);
@@ -210,16 +191,6 @@ const Verse = (props) => {
       en: surah.name_en,
     };
     return surahNames[locale];
-  });
-
-  const bookmarkNotifications = useMemo(() => {
-    return {
-      remove_loading: t("bookmark__remove_loading"),
-      remove_success: t("bookmark__remove_success"),
-      add_error: t("bookmark__remove_error"),
-      add_loading: t("bookmark__add_loading"),
-      add_success: t("bookmark__add_success"),
-    };
   });
 
   const verseTranscription = useMemo(() => {
@@ -495,52 +466,6 @@ const Verse = (props) => {
                   </h5>
                   {!isAmp && (
                     <div className="verse-author__actions">
-                      <div className="verse-author__actions-icon">
-                        {isBookmarked ? (
-                          <Button
-                            type="text"
-                            aria-label={t("context_menu__remove_bookmark")}
-                            onClick={() =>
-                              handleBookmark({
-                                action: "remove",
-                                surahId: surah.id,
-                                verseNumber: verse.number,
-                                verseId: verse.id,
-                                setIsBookmarked,
-                                notifications: bookmarkNotifications,
-                              })
-                            }
-                          >
-                            <RiBookmarkFill color="#FBA725" />
-                          </Button>
-                        ) : (
-                          <Button
-                            type="text"
-                            aria-label={t("context_menu__add_bookmark")}
-                            onClick={() =>
-                              session?.user?.id
-                                ? handleBookmark({
-                                    action: "add",
-                                    surahId: surah.id,
-                                    verseNumber: verse.number,
-                                    verseId: verse.id,
-                                    setIsBookmarked,
-                                    notifications: bookmarkNotifications,
-                                  })
-                                : setModalInfo({
-                                    openedModal: "login",
-                                    modalProps: {
-                                      message: t(
-                                        "login__required_message__bookmark"
-                                      ),
-                                    },
-                                  })
-                            }
-                          >
-                            <RiBookmarkLine />
-                          </Button>
-                        )}
-                      </div>
                       <div className="verse-author__actions-icon">
                         <Button
                           type="text"
@@ -881,10 +806,17 @@ const Verse = (props) => {
 };
 
 export async function getServerSideProps(ctx) {
-  const session = await getServerSession(ctx.req, ctx.res, authOptions);
-  const { locale, settings, authorId, authorSelections } = sessionCookieControl(
-    { ctx, session }
-  );
+  const locale = process.env.NEXT_PUBLIC_LOCALE;
+  const defaultAuthorId = require("@data/defaultAuthors")[locale];
+  const settings = cookies(ctx).settings || {
+    a: defaultAuthorId,
+    hT: null,
+    hC: null,
+    sF: null,
+    hO: null,
+  };
+  const authorId = settings?.a || defaultAuthorId;
+  const authorSelections = cookies(ctx).a_s || defaultAuthorSelections[locale];
 
   let {
     query: { surah_id, verse_number },
