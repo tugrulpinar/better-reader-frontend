@@ -8,7 +8,7 @@ module.exports = [
     manifest: "/locales/tr/manifest.json",
     logo: {
       component: LogoSvg_tr,
-      alt: "Açık Kuran",
+      alt: "Better Reader",
       height: "20px",
     },
     heroImages: {
@@ -17,17 +17,6 @@ module.exports = [
       darkMobile: "/locales/tr/images/bg/d-bg-m.webp",
       lightMobile: "https://audio.acikkuran.com/images/acmb.webp",
     },
-    createPasswordEmailParams: {
-      site_title: "Açık Kuran",
-      description:
-        "Açık Kuran tek kullanımlık şifreniz aşağıda belirtilmiştir.",
-      greetings: "Selam,",
-      twitter_handle: "acikkuran",
-      logo_src:
-        "https://acikkuran.com/locales/tr/images/manifest/android-chrome-192x192.png",
-      subject: "Açık Kuran - Tek Kullanımlık Şifre",
-      from: "Açık Kuran",
-    },
   },
   {
     locale: "en",
@@ -35,7 +24,7 @@ module.exports = [
     manifest: "/locales/en/manifest.json",
     logo: {
       component: LogoSvg_en,
-      alt: "Quran.so",
+      alt: "Better Reader",
       height: "14px",
     },
     heroImages: {
@@ -43,16 +32,6 @@ module.exports = [
       light: "https://audio.acikkuran.com/images/acbg.webp",
       darkMobile: "/locales/tr/images/bg/d-bg-m.webp",
       lightMobile: "https://audio.acikkuran.com/images/acmb.webp",
-    },
-    createPasswordEmailParams: {
-      site_title: "Quran.so",
-      description: "Your single-use password is below.",
-      greetings: "Hello,",
-      twitter_handle: "qurandotso",
-      logo_src:
-        "https://quran.so/locales/en/images/manifest/android-chrome-192x192.png",
-      subject: "Quran.so - Single-use Password",
-      from: "Quran.so",
     },
   },
 ];

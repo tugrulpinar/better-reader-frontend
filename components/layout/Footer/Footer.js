@@ -48,7 +48,7 @@ const Footer = (props) => {
           <Link href="/about">
             <img
               src={computedFavicon}
-              alt="Açık Kuran Logo"
+              alt="Better Reader Logo"
               width={24}
               height={24}
             />

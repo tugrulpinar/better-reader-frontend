@@ -51,12 +51,12 @@ const SocialIcons = ({ isFooter = false }) => {
         name="instagram"
       />
       <SocialIcon
-        url="https://github.com/acik-kuran"
+        url="https://github.com/tugrulpinar/better-reader-frontend"
         icon={RiGithubLine}
         name="github"
       />
       <SocialIcon
-        url="mailto:selam@acikkuran.com"
+        url="mailto:"
         icon={RiMailLine}
         name="e-mail"
       />

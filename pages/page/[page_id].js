@@ -1,5 +1,4 @@
-import sessionCookieControl from "lib/sessionCookieControl";
-import { getServerSession } from "next-auth";
+import cookies from "next-cookies";
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { NextSeo } from "next-seo";
@@ -14,7 +13,6 @@ import {
 } from "react-icons/ri";
 import { useRecoilValue } from "recoil";
 
-import { authOptions } from "@auth/[...nextauth]";
 import Button from "@components/common/Button";
 import Organization from "@components/common/Organization";
 import Error from "@components/layout/Error";
@@ -22,7 +20,6 @@ import Navbar from "@components/layout/Navbar";
 import PageOriginalComponent from "@components/ui/PageOriginal";
 import PageTranslationComponent from "@components/ui/PageTranslation";
 import juzNumbers from "@data/juzNumbers";
-import useStreakTimer from "@hooks/useStreakTimer";
 import { envInfoState } from "@recoil/atoms";
 import { Content } from "@styles/global.style";
 import {
@@ -74,8 +71,6 @@ const Page = (props) => {
   if (errorCode) {
     return <Error />;
   }
-
-  useStreakTimer();
 
   const envInfo = useRecoilValue(envInfoState);
 
@@ -313,8 +308,10 @@ const Page = (props) => {
 };
 
 export async function getServerSideProps(ctx) {
-  const session = await getServerSession(ctx.req, ctx.res, authOptions);
-  const { locale, authorId } = sessionCookieControl({ ctx, session });
+  const locale = process.env.NEXT_PUBLIC_LOCALE;
+  const defaultAuthorId = require("@data/defaultAuthors")[locale];
+  const settings = cookies(ctx).settings || { a: defaultAuthorId };
+  const authorId = settings?.a || defaultAuthorId;
 
   const {
     query: { page_id },

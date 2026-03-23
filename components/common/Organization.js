@@ -10,7 +10,7 @@ const Organization = () => {
       name={t("seo__base_title")}
       url={t("seo__base_url")}
       sameAs={[
-        "https://www.facebook.com/acikkuran",
+        "",
         t("social_urls__twitter"),
         t("social_urls__instagram"),
       ]}

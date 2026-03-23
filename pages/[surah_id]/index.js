@@ -1,7 +1,5 @@
-import sessionCookieControl from "lib/sessionCookieControl";
+import cookies from "next-cookies";
 import localesConfig from "locales.config";
-import { getServerSession } from "next-auth";
-import { useSession } from "next-auth/react";
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { BreadcrumbJsonLd, NextSeo } from "next-seo";
@@ -14,7 +12,6 @@ import React, { useContext, useEffect, useMemo, useState } from "react";
 import {
   RiArrowLeftLine,
   RiBook3Line,
-  RiBookmarkLine,
   RiExternalLinkLine,
   RiFingerprintFill,
   RiHome6Line,
@@ -26,8 +23,6 @@ import {
 } from "react-icons/ri";
 import { Tooltip } from "react-tippy";
 import { useRecoilState, useRecoilValue } from "recoil";
-
-import { authOptions } from "@auth/[...nextauth]";
 import AmpAnalytics from "@components/amp/AmpAnalytics";
 import Button from "@components/common/Button";
 import Organization from "@components/common/Organization";
@@ -36,9 +31,7 @@ import Error from "@components/layout/Error";
 import Footer from "@components/layout/Footer";
 import Navbar from "@components/layout/Navbar";
 import VerseExpand from "@components/ui/VerseExpand";
-import useStreakTimer from "@hooks/useStreakTimer";
 import { envInfoState, modalState } from "@recoil/atoms";
-import { BookmarkAction } from "@styles/bookmark.style";
 import { Content } from "@styles/global.style";
 import { NavSearch } from "@styles/navbar.style";
 import {
@@ -71,7 +64,6 @@ import {
   goToPage,
   goToSurah,
   goToVerse,
-  handleBookmark,
   verseOptions,
 } from "@utils/funcs";
 import languageAlternates from "@utils/languageAlternates";
@@ -104,12 +96,9 @@ const Surah = (props) => {
 
   const router = useRouter();
   const { t } = useTranslation("common");
-  const { data: session } = useSession();
 
   const [_, setModalInfo] = useRecoilState(modalState);
   const [isTippyVisible, setIsTippyVisible] = useState(undefined);
-
-  useStreakTimer();
 
   const envInfo = useRecoilValue(envInfoState);
 
@@ -158,16 +147,6 @@ const Surah = (props) => {
 
   const surahName = useMemo(() => {
     return surahNames[locale];
-  });
-
-  const bookmarkNotifications = useMemo(() => {
-    return {
-      remove_loading: t("bookmark__remove_loading"),
-      remove_success: t("bookmark__remove_success"),
-      add_error: t("bookmark__remove_error"),
-      add_loading: t("bookmark__add_loading"),
-      add_success: t("bookmark__add_success"),
-    };
   });
 
   const zeroTranscription = useMemo(() => {
@@ -528,90 +507,61 @@ const Surah = (props) => {
                             ></Link>
 
                             {!isAmp && (
-                              <BookmarkAction>
-                                <Tooltip
-                                  interactive
-                                  tag="span"
-                                  open={isTippyVisible}
-                                  onRequestClose={() => {
-                                    setIsTippyVisible(undefined);
-                                  }}
-                                  html={
-                                    isTippyVisible !== false && (
-                                      <div
-                                        className="bookmark-context-menu"
-                                        style={{
-                                          padding: "10px 0",
-                                          textAlign: "left",
-                                          width: 220,
-                                        }}
-                                      >
-                                        <ul className="tippy-list">
-                                          <li
-                                            onClick={() => {
-                                              if (session?.user?.id) {
-                                                handleBookmark({
-                                                  action: "add",
-                                                  surahId: surah.id,
-                                                  verseNumber: verse.number,
-                                                  verseId: verse.id,
-                                                  notifications:
-                                                    bookmarkNotifications,
-                                                });
-                                              } else {
-                                                setModalInfo({
-                                                  openedModal: "login",
-                                                  modalProps: {
-                                                    message: t(
-                                                      "login__required_message__bookmark"
-                                                    ),
-                                                  },
-                                                });
-                                                setIsTippyVisible(false);
-                                              }
-                                            }}
-                                          >
-                                            <RiBookmarkLine />{" "}
-                                            {t("context_menu__add_bookmark")}
-                                          </li>
-                                          <li
-                                            onClick={() => {
-                                              router.push(
-                                                `/${surah.id}/${verse.number}`
-                                              );
-                                              setIsTippyVisible(false);
-                                            }}
-                                          >
-                                            <RiQuillPenLine />{" "}
-                                            {t(
-                                              "context_menu__go_to_verse_detail"
-                                            )}
-                                          </li>
-                                          <li
-                                            onClick={() => {
-                                              router.push(
-                                                `/page/${verse.page}#${surah.id}:${verse.number}`
-                                              );
-                                              setIsTippyVisible(false);
-                                            }}
-                                          >
-                                            <RiBook3Line />{" "}
-                                            {t("context_menu__go_to_page")}
-                                          </li>
-                                        </ul>
-                                      </div>
-                                    )
-                                  }
-                                  theme="light"
-                                  position="bottom"
-                                  trigger="click"
-                                  animation="shift"
-                                  arrow={isTippyVisible !== false}
-                                  duration="150"
-                                >
-                                  <RiMoreFill />
-                                </Tooltip>
-                              </BookmarkAction>
+                              <Tooltip
+                                interactive
+                                tag="span"
+                                open={isTippyVisible}
+                                onRequestClose={() => {
+                                  setIsTippyVisible(undefined);
+                                }}
+                                html={
+                                  isTippyVisible !== false && (
+                                    <div
+                                      className="bookmark-context-menu"
+                                      style={{
+                                        padding: "10px 0",
+                                        textAlign: "left",
+                                        width: 220,
+                                      }}
+                                    >
+                                      <ul className="tippy-list">
+                                        <li
+                                          onClick={() => {
+                                            router.push(
+                                              `/${surah.id}/${verse.number}`
+                                            );
+                                            setIsTippyVisible(false);
+                                          }}
+                                        >
+                                          <RiQuillPenLine />{" "}
+                                          {t(
+                                            "context_menu__go_to_verse_detail"
+                                          )}
+                                        </li>
+                                        <li
+                                          onClick={() => {
+                                            router.push(
+                                              `/page/${verse.page}#${surah.id}:${verse.number}`
+                                            );
+                                            setIsTippyVisible(false);
+                                          }}
+                                        >
+                                          <RiBook3Line />{" "}
+                                          {t("context_menu__go_to_page")}
+                                        </li>
+                                      </ul>
+                                    </div>
+                                  )
+                                }
+                                theme="light"
+                                position="bottom"
+                                trigger="click"
+                                animation="shift"
+                                arrow={isTippyVisible !== false}
+                                duration="150"
+                              >
+                                <RiMoreFill />
+                              </Tooltip>
                             )}
                           </SurahVerseNumber>
                           {!userSettings.hT && (
@@ -657,8 +607,16 @@ const Surah = (props) => {
 };
 
 export async function getServerSideProps(ctx) {
-  const session = await getServerSession(ctx.req, ctx.res, authOptions);
-  const { locale, settings, authorId } = sessionCookieControl({ ctx, session });
+  const locale = process.env.NEXT_PUBLIC_LOCALE;
+  const defaultAuthorId = require("@data/defaultAuthors")[locale];
+  const settings = cookies(ctx).settings || {
+    a: defaultAuthorId,
+    hT: null,
+    hC: null,
+    sF: null,
+    hO: null,
+  };
+  const authorId = settings?.a || defaultAuthorId;
 
   let {
     query: { surah_id },

@@ -1,6 +1,5 @@
-import sessionCookieControl from "lib/sessionCookieControl";
+import cookies from "next-cookies";
 import localesConfig from "locales.config";
-import { getServerSession } from "next-auth";
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { NextSeo } from "next-seo";
@@ -10,20 +9,17 @@ import { useRouter } from "next/router";
 import React, { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import {
-  RiBookmarkLine,
   RiMoonFill,
   RiSunLine,
-  RiUser4Line,
 } from "react-icons/ri";
 import { useRecoilState } from "recoil";
 
-import { authOptions } from "@auth/[...nextauth]";
 import Button from "@components/common/Button";
 import Organization from "@components/common/Organization";
 import Footer from "@components/layout/Footer";
 import DesktopSearch from "@components/ui/DesktopSearch";
 import MobileSearch from "@components/ui/MobileSearch";
-import { envInfoState, modalState } from "@recoil/atoms";
+import { envInfoState } from "@recoil/atoms";
 import {
   AuthArea,
   AuthedUser,
@@ -37,15 +33,12 @@ import { initGA, logPageView } from "@utils/analytics";
 import languageAlternates from "@utils/languageAlternates";
 
 const Index = (props) => {
-  const { themeToggler, theme, session, settings, locale } = props;
+  const { themeToggler, theme, locale } = props;
   const router = useRouter();
   const { t } = useTranslation("common");
 
   const [showMobile, setShowMobile] = useState(false);
   const [envInfo, setEnvInfo] = useRecoilState(envInfoState);
-  const [_, setModalInfo] = useRecoilState(modalState);
-
-  const [userSettings, setUserSettings] = useState(settings);
 
   useEffect(() => {
     if (router?.query?.error) {
@@ -130,60 +123,6 @@ const Index = (props) => {
           </Link>
         </Logo>
         <AuthArea>
-          {session ? (
-            <AuthedUser>
-              <Button
-                type="text"
-                role="button"
-                tabIndex="0"
-                onClick={() =>
-                  setModalInfo({
-                    openedModal: "settings",
-                    modalProps: {
-                      userSettings,
-                      setUserSettings,
-                    },
-                  })
-                }
-                aria-label={t("settings__tab__settings_title")}
-              >
-                <RiUser4Line />
-              </Button>
-            </AuthedUser>
-          ) : (
-            <div
-              className="auth__link"
-              aria-label={t("login__title")}
-              role="button"
-              tabIndex="0"
-              onClick={() => {
-                setModalInfo({
-                  openedModal: "login",
-                  modalProps: {},
-                });
-              }}
-            >
-              {t("login__title")}
-            </div>
-          )}
-          <div className="auth__divider"></div>
-          <AuthedUser>
-            <Button
-              type="text"
-              role="button"
-              tabIndex="0"
-              onClick={() => {
-                setModalInfo({
-                  openedModal: "bookmarks",
-                  modalProps: {},
-                });
-              }}
-              aria-label={t("bookmark__title")}
-            >
-              <RiBookmarkLine />
-            </Button>
-          </AuthedUser>
-          <div className="auth__divider"></div>
           <AuthedUser>
             <Button
               type="text"
@@ -216,14 +155,11 @@ const Index = (props) => {
 };
 
 export async function getServerSideProps(ctx) {
-  const session = await getServerSession(ctx.req, ctx.res, authOptions);
-  const { locale, settings } = sessionCookieControl({ ctx, session });
+  const locale = process.env.NEXT_PUBLIC_LOCALE;
 
   return {
     props: {
       locale,
-      settings,
-      session,
       ...(await serverSideTranslations(locale, ["common"])),
     },
   };
