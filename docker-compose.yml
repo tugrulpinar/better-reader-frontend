@@ -1,0 +1,8 @@
+services:
+  app:
+    build: .
+    ports:
+      - "2018:2018"
+    env_file:
+      - .env
+    container_name: better-reader-frontend
