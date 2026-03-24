@@ -31,6 +31,11 @@ import { envInfoState, targetVerseState } from "@recoil/atoms";
 import { Content } from "@styles/global.style";
 import {
   Col,
+  ConjugationBody,
+  ConjugationHeader,
+  ConjugationSection,
+  ConjugationTable,
+  ConjugationWrapper,
   Container,
   EmptyVersesData,
   RootDetail,
@@ -84,6 +89,8 @@ const Root = (props) => {
   const [rootChar, setRootChar] = useState(root.rootchar_id);
   const [loading, setLoading] = useState(true);
   const [showButton, setShowButton] = useState(false);
+  const [conjugations, setConjugations] = useState(null);
+  const [showConjugations, setShowConjugations] = useState(false);
   const targetVerseValue = useRecoilValue(targetVerseState);
 
   const [navWidth, setNavWidth] = useState(
@@ -172,6 +179,26 @@ const Root = (props) => {
     logPageView();
     logEvent("env-info", envInfo || "web");
   }, [root]);
+
+  useEffect(() => {
+    if (router?.query?.latin) {
+      const fetchConjugations = async () => {
+        try {
+          const data = await fetchJson(
+            `/api/conjugation/${router.query.latin}`
+          );
+          if (data?.conjugations) {
+            setConjugations(data.conjugations);
+          } else {
+            setConjugations(null);
+          }
+        } catch {
+          setConjugations(null);
+        }
+      };
+      fetchConjugations();
+    }
+  }, [router?.query?.latin]);
 
   useEffect(() => {
     fetchRootcharRoots(rootChar);
@@ -309,6 +336,160 @@ const Root = (props) => {
             </Row>
           </Container>
         </RootMain>
+        {conjugations && (
+          <ConjugationWrapper>
+            <ConjugationHeader
+              onClick={() => setShowConjugations((v) => !v)}
+            >
+              <span className="conj-header__arabic">{root.arabic}</span>
+              <span className="conj-header__title">
+                {t("root__conjugations")}
+              </span>
+              {root.translation && (
+                <span className="conj-header__translation">
+                  {root.translation}
+                </span>
+              )}
+              <span
+                className={`conj-header__chevron ${
+                  showConjugations ? "open" : ""
+                }`}
+              >
+                <RiArrowDownSLine />
+              </span>
+            </ConjugationHeader>
+            {showConjugations && (
+              <ConjugationBody>
+                <Tabs>
+                  <TabList>
+                    {[
+                      { key: "past_tense", label: t("root__past_tense") },
+                      {
+                        key: "present_tense",
+                        label: t("root__present_tense"),
+                      },
+                    ].map(({ key, label }) => (
+                      <Tab key={key}>
+                        <TabText>{label}</TabText>
+                      </Tab>
+                    ))}
+                  </TabList>
+                  {[
+                    { key: "past_tense" },
+                    { key: "present_tense" },
+                  ].map(({ key }) => {
+                    const entries = conjugations[key] || [];
+
+                    const getConj = (person, number, gender) =>
+                      entries.find(
+                        (e) =>
+                          e.person === person &&
+                          e.number === number &&
+                          (e.gender === gender || e.gender === "common")
+                      );
+
+                    const renderCell = (person, number, gender) => {
+                      const entry = getConj(person, number, gender);
+                      if (!entry)
+                        return (
+                          <td
+                            key={`${person}-${number}-${gender}`}
+                            className="conj-cell empty"
+                          >
+                            —
+                          </td>
+                        );
+                      return (
+                        <td
+                          key={`${person}-${number}-${gender}`}
+                          className="conj-cell"
+                        >
+                          <span className="cell-form">{entry.form}</span>
+                          <span className="cell-transliteration">
+                            {entry.transliteration}
+                          </span>
+                          <span className="cell-pronoun">{entry.pronoun}</span>
+                        </td>
+                      );
+                    };
+
+                    return (
+                      <TabPanel key={key}>
+                        <ConjugationSection>
+                          <ConjugationTable>
+                            <thead>
+                              <tr>
+                                <th rowSpan={2}>{t("root__conj_hal")}</th>
+                                <th rowSpan={2}>{t("root__conj_gender")}</th>
+                                <th colSpan={3}>{t("root__conj_sayi")}</th>
+                              </tr>
+                              <tr>
+                                <th>{t("root__conj_number_plural")}</th>
+                                <th>{t("root__conj_number_dual")}</th>
+                                <th>{t("root__conj_number_singular")}</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td rowSpan={2} className="person-label">
+                                  {t("root__conj_person_third")}
+                                </td>
+                                <td className="gender-label">
+                                  {t("root__conj_gender_male")}
+                                </td>
+                                {renderCell("third", "plural", "male")}
+                                {renderCell("third", "dual", "male")}
+                                {renderCell("third", "singular", "male")}
+                              </tr>
+                              <tr>
+                                <td className="gender-label">
+                                  {t("root__conj_gender_female")}
+                                </td>
+                                {renderCell("third", "plural", "female")}
+                                {renderCell("third", "dual", "female")}
+                                {renderCell("third", "singular", "female")}
+                              </tr>
+                              <tr>
+                                <td rowSpan={2} className="person-label">
+                                  {t("root__conj_person_second")}
+                                </td>
+                                <td className="gender-label">
+                                  {t("root__conj_gender_male")}
+                                </td>
+                                {renderCell("second", "plural", "male")}
+                                {renderCell("second", "dual", "common")}
+                                {renderCell("second", "singular", "male")}
+                              </tr>
+                              <tr>
+                                <td className="gender-label">
+                                  {t("root__conj_gender_female")}
+                                </td>
+                                {renderCell("second", "plural", "female")}
+                                {renderCell("second", "dual", "common")}
+                                {renderCell("second", "singular", "female")}
+                              </tr>
+                              <tr>
+                                <td className="person-label">
+                                  {t("root__conj_person_first")}
+                                </td>
+                                <td className="gender-label">
+                                  {t("root__conj_gender_common")}
+                                </td>
+                                {renderCell("first", "plural", "common")}
+                                {renderCell("first", "dual", "common")}
+                                {renderCell("first", "singular", "common")}
+                              </tr>
+                            </tbody>
+                          </ConjugationTable>
+                        </ConjugationSection>
+                      </TabPanel>
+                    );
+                  })}
+                </Tabs>
+              </ConjugationBody>
+            )}
+          </ConjugationWrapper>
+        )}
         <RootDetail>
           <Container>
             <Row>

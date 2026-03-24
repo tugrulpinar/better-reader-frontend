@@ -324,6 +324,183 @@ const EmptyVersesData = styled.div`
   align-items: center;
 `;
 
+const ConjugationSection = styled.div`
+  ${({ theme }) => css`
+    padding: 1.5em 1em;
+    & + & {
+      border-top: 2px solid ${theme.secondaryColor};
+    }
+  `}
+`;
+
+const ConjugationTenseTitle = styled.h3`
+  ${({ theme }) => css`
+    font-size: 0.95em;
+    font-weight: 600;
+    color: ${theme.primaryDark};
+    margin-bottom: 1em;
+    padding-bottom: 0.5em;
+    border-bottom: 1px solid ${theme.secondaryColor};
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    opacity: 0.7;
+  `}
+`;
+
+const ConjugationTable = styled.table`
+  ${({ theme }) => css`
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85em;
+
+    th,
+    td {
+      border: 1px solid ${theme.secondaryColor};
+      padding: 0.5em 0.6em;
+      vertical-align: middle;
+    }
+
+    thead th {
+      background: ${theme.thirdColor};
+      font-weight: 600;
+      font-size: 0.78em;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: ${theme.primaryDark};
+      text-align: center;
+      opacity: 0.8;
+    }
+
+    .person-label {
+      font-weight: 700;
+      font-size: 0.8em;
+      text-align: center;
+      background: ${theme.thirdColor};
+      color: ${theme.primaryDark};
+    }
+
+    .gender-label {
+      font-weight: 600;
+      font-size: 0.78em;
+      text-align: center;
+      color: ${theme.primaryDark};
+      opacity: 0.75;
+      white-space: nowrap;
+    }
+
+    .conj-cell {
+      text-align: center;
+      padding: 0.6em 0.5em;
+      &.empty {
+        opacity: 0.3;
+      }
+    }
+
+    .cell-form {
+      display: block;
+      font-family: var(--font-mushaf) !important;
+      font-size: 1.5em;
+      direction: rtl;
+      font-weight: 600;
+      color: ${theme.primaryDark};
+      margin-bottom: 0.15em;
+    }
+
+    .cell-transliteration {
+      display: block;
+      font-style: italic;
+      font-size: 0.82em;
+      opacity: 0.7;
+      margin-bottom: 0.15em;
+    }
+
+    .cell-pronoun {
+      display: block;
+      font-family: var(--font-mushaf) !important;
+      font-size: 0.9em;
+      direction: rtl;
+      opacity: 0.6;
+    }
+
+    @media only screen and (max-width: ${theme.sizes.sm}) {
+      font-size: 0.72em;
+      .person-label,
+      .gender-label {
+        font-size: 0.7em;
+      }
+      .cell-form {
+        font-size: 1.2em;
+      }
+    }
+  `}
+`;
+
+const ConjugationWrapper = styled.div`
+  ${({ theme }) => css`
+    max-width: 70em;
+    margin: 1.5em auto;
+    border: 1px solid ${theme.borderHover};
+    border-radius: 6px;
+    overflow: hidden;
+    @media only screen and (max-width: ${theme.sizes.sm}) {
+      margin: 1em 16px;
+    }
+  `}
+`;
+
+const ConjugationHeader = styled.div`
+  ${({ theme }) => css`
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    cursor: pointer;
+    padding: 0.9em 1.25em;
+    gap: 0.75em;
+    user-select: none;
+    background: ${theme.thirdColor};
+    border-bottom: 1px solid ${theme.borderHover};
+    &:hover {
+      filter: brightness(0.96);
+    }
+    .conj-header__title {
+      font-weight: 700;
+      font-size: 1em;
+      flex-grow: 1;
+      color: ${theme.primaryDark};
+    }
+    .conj-header__arabic {
+      font-family: var(--font-mushaf) !important;
+      font-size: 1.5em;
+      color: ${theme.primaryDark};
+    }
+    .conj-header__translation {
+      opacity: 0.65;
+      font-size: 0.875em;
+      font-style: italic;
+    }
+    .conj-header__chevron {
+      display: flex;
+      align-items: center;
+      transition: transform 0.2s ease;
+      &.open {
+        transform: rotate(180deg);
+      }
+      svg {
+        width: 1.4em;
+        height: 1.4em;
+        color: ${theme.neutralDark};
+      }
+    }
+  `}
+`;
+
+const ConjugationBody = styled.div`
+  ${({ theme }) => css`
+    padding: 0 0.25em;
+    background: ${theme.bodyBackground};
+  `}
+`;
+
 export {
   Tab,
   Tabs,
@@ -352,4 +529,10 @@ export {
   RootVerseTags,
   RootVerseTag,
   EmptyVersesData,
+  ConjugationWrapper,
+  ConjugationHeader,
+  ConjugationBody,
+  ConjugationSection,
+  ConjugationTenseTitle,
+  ConjugationTable,
 };
