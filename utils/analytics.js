@@ -2,7 +2,7 @@ import ReactGA from "react-ga4";
 export const initGA = () => {
   let tagId = process.env.NEXT_PUBLIC_ANALYTICS_ID;
 
-  if (process.env.NEXT_PUBLIC_ENVIRONMENT === "production") {
+  if (process.env.NEXT_PUBLIC_ENVIRONMENT === "production" && tagId) {
     // console.log('GA init!');
     ReactGA.initialize(tagId);
   }
