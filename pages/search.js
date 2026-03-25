@@ -1,5 +1,6 @@
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import nextI18nextConfig from "next-i18next.config";
 import { NextSeo } from "next-seo";
 import dynamic from "next/dynamic";
 import Head from "next/head";
@@ -353,7 +354,7 @@ export async function getServerSideProps(ctx) {
       props: {
         status: "redirect",
         redirectRoute: `${data.redirect}`,
-        ...(await serverSideTranslations(locale, ["common"])),
+        ...(await serverSideTranslations(locale, ["common"], nextI18nextConfig)),
       },
     };
   }
@@ -370,14 +371,14 @@ export async function getServerSideProps(ctx) {
         totalPages: data.totalPages || 0,
         page: data.page || 1,
         totalHits: data.totalHits || 0,
-        ...(await serverSideTranslations(locale, ["common"])),
+        ...(await serverSideTranslations(locale, ["common"], nextI18nextConfig)),
       },
     };
   } else {
     return {
       props: {
         errorCode: 404,
-        ...(await serverSideTranslations(locale, ["common"])),
+        ...(await serverSideTranslations(locale, ["common"], nextI18nextConfig)),
       },
     };
   }

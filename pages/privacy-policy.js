@@ -1,5 +1,6 @@
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import nextI18nextConfig from "next-i18next.config";
 import { BreadcrumbJsonLd, NextSeo } from "next-seo";
 import Head from "next/head";
 import Link from "next/link";
@@ -124,7 +125,7 @@ export async function getServerSideProps() {
   return {
     props: {
       locale,
-      ...(await serverSideTranslations(locale, ["common"])),
+      ...(await serverSideTranslations(locale, ["common"], nextI18nextConfig)),
     },
   };
 }

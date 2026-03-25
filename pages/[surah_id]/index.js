@@ -2,6 +2,7 @@ import cookies from "next-cookies";
 import localesConfig from "locales.config";
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import nextI18nextConfig from "next-i18next.config";
 import { BreadcrumbJsonLd, NextSeo } from "next-seo";
 import { useAmp } from "next/amp";
 import dynamic from "next/dynamic";
@@ -631,7 +632,7 @@ export async function getServerSideProps(ctx) {
     return {
       props: {
         errorCode: 404,
-        ...(await serverSideTranslations(locale, ["common"])),
+        ...(await serverSideTranslations(locale, ["common"], nextI18nextConfig)),
       },
     };
   }
@@ -686,14 +687,14 @@ export async function getServerSideProps(ctx) {
             footnotes: entry.translation.footnotes,
           },
         })),
-        ...(await serverSideTranslations(locale, ["common"])),
+        ...(await serverSideTranslations(locale, ["common"], nextI18nextConfig)),
       },
     };
   } else {
     return {
       props: {
         errorCode: 404,
-        ...(await serverSideTranslations(locale, ["common"])),
+        ...(await serverSideTranslations(locale, ["common"], nextI18nextConfig)),
       },
     };
   }
