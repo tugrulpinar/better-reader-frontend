@@ -327,6 +327,8 @@ const EmptyVersesData = styled.div`
 const ConjugationSection = styled.div`
   ${({ theme }) => css`
     padding: 1.5em 1em;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
     & + & {
       border-top: 2px solid ${theme.secondaryColor};
     }
@@ -423,14 +425,7 @@ const ConjugationTable = styled.table`
     }
 
     @media only screen and (max-width: ${theme.sizes.sm}) {
-      font-size: 0.72em;
-      .person-label,
-      .gender-label {
-        font-size: 0.7em;
-      }
-      .cell-form {
-        font-size: 1.2em;
-      }
+      white-space: nowrap;
     }
   `}
 `;
