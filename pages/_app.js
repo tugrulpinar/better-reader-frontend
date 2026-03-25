@@ -143,7 +143,7 @@ BetterReader.getInitialProps = async (appContext) => {
 
   const { req } = appContext.ctx;
   const { theme, author_id } = cookies({ req });
-  const currentDomain = req.headers.host;
+  const currentDomain = req?.headers?.host || null;
 
   const locale = process.env.NEXT_PUBLIC_LOCALE;
   const defaultAuthorId = defaultAuthors[locale];
